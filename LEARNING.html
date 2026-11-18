@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORBIT - Personal Intelligence & Life Management Ecosystem</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f59e0b;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 16px;
+        }
+
+        .logo-area h2 {
+            font-size: 24px;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+
+        .logo-area p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--bg-hover);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            border-left: 4px solid var(--accent);
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .user-info .name {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-info .status {
+            font-size: 11px;
+            color: var(--green);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .top-header {
+            padding: 24px 32px;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-hover);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-subtle {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .badge-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background-color: var(--red);
+            border-radius: 50%;
+        }
+
+        /* Views Container */
+        .views-wrapper {
+            padding: 32px;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: var(--radius);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .metric-icon.finance { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+        .metric-icon.habits { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .metric-icon.career { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .metric-icon.wellbeing { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+
+        .metric-data span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .metric-data h3 {
+            font-size: 18px;
+            margin: 4px 0;
+        }
+
+        .metric-data p {
+            font-size: 11px;
+        }
+        .metric-data p.positive { color: var(--green); }
+        .metric-data p.neutral { color: var(--text-muted); }
+        .metric-data p.warning-text { color: var(--orange); }
+
+        /* Insight Banner */
+        .insight-banner {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .insight-icon {
+            font-size: 28px;
+            color: var(--accent);
+        }
+
+        .insight-content {
+            flex: 1;
+        }
+
+        .insight-content h4 {
+            font-size: 14px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .insight-content p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: var(--radius);
+        }
+
+        .panel h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checklist {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: auto;
+            font-weight: 600;
+        }
+        .tag.career { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+        .tag.habits { background: rgba(245, 158, 11, 0.2); color: var(--orange); }
+        .tag.finance { background: rgba(56, 189, 248, 0.2); color: var(--accent); }
+        .tag.wellbeing { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+
+        /* Quick Simulation Box */
+        .sim-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .sim-input-group input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 10px;
+            color: var(--text-main);
+            border-radius: 6px;
+        }
+
+        .sim-result-box {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .sim-result-box.hidden { display: none; }
+
+        /* Tables & Modules */
+        .module-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .finance-grid, .career-grid, .journal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 24px;
+        }
+
+        .budget-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .budget-stat-row.total {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .red { color: var(--red); }
+        .green { color: var(--green); }
+        .orange { color: var(--orange); }
+
+        /* Wellbeing Sliders */
+        .wellbeing-sliders {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .slider-group label {
+            font-size: 13px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 6px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 16px;
+        }
+
+        /* Habits */
+        .habit-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .habit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-primary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .habit-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .streak-badge {
+            font-size: 12px;
+            color: var(--orange);
+            background: rgba(245, 158, 11, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .streak-badge.missed {
+            color: var(--text-muted);
+            background: var(--bg-hover);
+        }
+
+        /* Career & Milestones */
+        .progress-bar-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .milestone-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .milestone-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+        }
+        .milestone-list li.completed { color: var(--green); }
+        .milestone-list li.active-milestone { color: var(--accent); font-weight: 500; }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .skill-tag {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        /* Journal */
+        .note-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .note-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .note-card h4 {
+            font-size: 15px;
+        }
+
+        .note-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .note-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Chat Assistant */
+        .chat-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .message.user .msg-avatar {
+            background: var(--bg-hover);
+            color: var(--text-main);
+        }
+
+        .msg-bubble {
+            background: var(--bg-primary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .chat-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 12px;
+            color: var(--text-main);
+            border-radius: var(--radius);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.hidden { display: none; }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: var(--radius);
+            width: 400px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .close-modal:hover { color: var(--text-main); }
+        .modal-content input {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 12px;
+            color: var(--text-main);
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <h2>ORBIT</h2>
+                <p>Your life, connected.</p>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="dashboard-view">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-target="finance-view">
+                    <i class="fa-solid fa-wallet"></i> Finance Management
+                </a>
+                <a href="#" class="nav-item" data-target="wellbeing-view">
+                    <i class="fa-solid fa-heart-pulse"></i> Mental Wellbeing
+                </a>
+                <a href="#" class="nav-item" data-target="habits-view">
+                    <i class="fa-solid fa-check-to-slot"></i> Habit Tracking
+                </a>
+                <a href="#" class="nav-item" data-target="career-view">
+                    <i class="fa-solid fa-briefcase"></i> Career Development
+                </a>
+                <a href="#" class="nav-item" data-target="journal-view">
+                    <i class="fa-solid fa-book-open"></i> Journal & Notes
+                </a>
+                <a href="#" class="nav-item" data-target="ai-view">
+                    <i class="fa-solid fa-robot"></i> ORBIT AI Assistant
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">R</div>
+                    <div class="user-info">
+                        <span class="name">Rahul (21)</span>
+                        <span class="status">Connected OS</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-title">Dashboard Overview</h1>
+                    <p id="page-subtitle">Where do I currently stand? Your interconnected daily overview.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" id="quick-action-btn"><i class="fa-solid fa-plus"></i> Quick Log Entry</button>
+                    <div class="notification-badge"><i class="fa-solid fa-bell"></i><span class="badge-dot"></span></div>
+                </div>
+            </header>
+
+            <!-- Dynamic Views Container -->
+            <div class="views-wrapper">
+
+                <!-- 1. DASHBOARD VIEW -->
+                <section id="dashboard-view" class="view-section active">
+                    <!-- Quick Metric Cards -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon finance"><i class="fa-solid fa-wallet"></i></div>
+                            <div class="metric-data">
+                                <span>Monthly Balance</span>
+                                <h3>₹9,500 <small>/ ₹12,000</small></h3>
+                                <p class="positive">₹1,500 pending obligations</p>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon habits"><i class="fa-solid fa-fire"></i></div>
+                            <div class="metric-data">
+                                <span>Habits Today</span>
+                                <h3>3 / 5 Done</h3>
+                                <p class="neutral">Consistency stable</p>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon career"><i class="fa-solid fa-laptop-code"></i></div>
+                            <div class="metric-data">
+                                <span>Career Progress</span>
+                                <h3>8 Learning Sessions</h3>
+                                <p class="positive">5 DSA / 3 AI/ML this week</p>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon wellbeing"><i class="fa-solid fa-face-smile"></i></div>
+                            <div class="metric-data">
+                                <span>Wellbeing Trend</span>
+                                <h3>Mood: 4/10</h3>
+                                <p class="warning-text">Stress elevated (8/10)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cross-Module Intelligence Highlight Box -->
+                    <div class="insight-banner">
+                        <div class="insight-icon"><i class="fa-solid fa-brain"></i></div>
+                        <div class="insight-content">
+                            <h4>ORBIT Cross-Module Intelligence Observation</h4>
+                            <p>Your recorded learning activity has declined while your reported stress has increased over the last three weeks. These trends occurred during the same period. <strong>Would you like to review your workload and schedule?</strong></p>
+                        </div>
+                        <button class="btn-subtle" onclick="switchView('ai-view')">Discuss with AI</button>
+                    </div>
+
+                    <!-- Daily Priorities & Quick Status Grid -->
+                    <div class="dashboard-grid">
+                        <div class="panel">
+                            <h3><i class="fa-solid fa-list-check"></i> Today's Priorities & Reminders</h3>
+                            <ul class="checklist" id="dashboard-checklist">
+                                <li><input type="checkbox" checked> <span>Complete DSA sliding window practice</span> <span class="tag career">Career</span></li>
+                                <li><input type="checkbox" checked> <span>Morning hydration & 10 min stretch</span> <span class="tag habits">Habit</span></li>
+                                <li><input type="checkbox"> <span>Review monthly allowance budget allocation</span> <span class="tag finance">Finance</span></li>
+                                <li><input type="checkbox"> <span>Complete evening wellbeing check-in</span> <span class="tag wellbeing">Wellbeing</span></li>
+                            </ul>
+                        </div>
+                        <div class="panel">
+                            <h3><i class="fa-solid fa-bolt"></i> Quick Actions & Simulations</h3>
+                            <div class="quick-sim-box">
+                                <p>Considering a major purchase? Test affordability against recorded budgets and savings plans.</p>
+                                <div class="sim-input-group">
+                                    <input type="text" id="sim-item-name" placeholder="Item (e.g. Smartwatch)">
+                                    <input type="number" id="sim-item-price" placeholder="Price (₹)">
+                                    <button class="btn-secondary" id="run-sim-btn">Simulate Affordability</button>
+                                </div>
+                                <div id="sim-result" class="sim-result-box hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. FINANCE MANAGEMENT VIEW -->
+                <section id="finance-view" class="view-section">
+                    <div class="module-header-actions">
+                        <div>
+                            <h2>Finance Management Dimension</h2>
+                            <p>Track allowances, daily expenses, budgets, and affordability simulations[cite: 3].</p>
+                        </div>
+                        <button class="btn-primary" id="open-expense-modal"><i class="fa-solid fa-plus"></i> Add Transaction</button>
+                    </div>
+
+                    <div class="finance-grid">
+                        <div class="panel">
+                            <h3>Budget Summary (Monthly)</h3>
+                            <div class="budget-stat-row">
+                                <span>Total Allowance / Income</span>
+                                <strong>₹12,000</strong>
+                            </div>
+                            <div class="budget-stat-row">
+                                <span>Essential Expenses</span>
+                                <strong class="red">₹3,000</strong>
+                            </div>
+                            <div class="budget-stat-row">
+                                <span>Committed Obligations</span>
+                                <strong class="orange">₹2,000</strong>
+                            </div>
+                            <div class="budget-stat-row">
+                                <span>Discretionary Spending</span>
+                                <strong>₹1,500</strong>
+                            </div>
+                            <div class="budget-stat-row total">
+                                <span>Remaining Balance</span>
+                                <strong class="green">₹5,500</strong>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <h3>Recent Transactions</h3>
+                            <table class="data-table">
+                               <thead>
+                                   <tr><th>Description</th><th>Category</th><th>Amount</th><th>Date</th></tr>
+                               </thead>
+                               <tbody id="transaction-table-body">
+                                   <tr><td>Breakfast at Cafeteria</td><td>Food</td><td class="red">-₹80</td><td>Today, 8:30 AM</td></tr>
+                                   <tr><td>Course Book Subscription</td><td>Education</td><td class="red">-₹450</td><td>Yesterday</td></tr>
+                                   <tr><td>Monthly Allowance Credited</td><td>Income</td><td class="green">+₹12,000</td><td>Oct 1</td></tr>
+                               </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. MENTAL WELLBEING VIEW -->
+                <section id="wellbeing-view" class="view-section">
+                    <div class="module-header-actions">
+                        <div>
+                            <h2>Mental Wellbeing Dimension</h2>
+                            <p>Support emotional awareness, stress trends, and reflection without clinical diagnosis[cite: 3].</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>Daily Check-in Logger</h3>
+                        <div class="wellbeing-sliders">
+                            <div class="slider-group">
+                                <label>Mood Rating: <span id="mood-val">4</span>/10</label>
+                                <input type="range" id="mood-range" min="1" max="10" value="4">
+                            </div>
+                            <div class="slider-group">
+                                <label>Energy Level: <span id="energy-val">3</span>/10</label>
+                                <input type="range" id="energy-range" min="1" max="10" value="3">
+                            </div>
+                            <div class="slider-group">
+                                <label>Stress Level: <span id="stress-val">8</span>/10</label>
+                                <input type="range" id="stress-range" min="1" max="10" value="8">
+                            </div>
+                        </div>
+                        <textarea placeholder="Write brief emotional reflections or thoughts..." id="wellbeing-note">Feeling busy with project deadlines and placement prep, but not entirely productive.</textarea>
+                        <button class="btn-primary" id="save-wellbeing-btn">Save Today's Check-in</button>
+                    </div>
+                </section>
+
+                <!-- 4. HABIT TRACKING VIEW -->
+                <section id="habits-view" class="view-section">
+                    <div class="module-header-actions">
+                        <div>
+                            <h2>Habit Tracking Dimension</h2>
+                            <p>Build sustainable routines without shame, punishment, or manipulative pressure[cite: 3].</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>Your Daily Routines</h3>
+                        <div class="habit-list-container" id="habit-container">
+                            <div class="habit-item">
+                                <div class="habit-info">
+                                    <input type="checkbox" checked class="habit-checkbox">
+                                    <span>Morning Hydration & Stretching</span>
+                                </div>
+                                <span class="streak-badge"><i class="fa-solid fa-fire"></i> 5 day streak</span>
+                            </div>
+                            <div class="habit-item">
+                                <div class="habit-info">
+                                    <input type="checkbox" checked class="habit-checkbox">
+                                    <span>DSA Problem Solving (1 LeetCode)</span>
+                                </div>
+                                <span class="streak-badge"><i class="fa-solid fa-fire"></i> 12 day streak</span>
+                            </div>
+                            <div class="habit-item">
+                                <div class="habit-info">
+                                    <input type="checkbox" class="habit-checkbox">
+                                    <span>Evening Outdoor Walk / Exercise</span>
+                                </div>
+                                <span class="streak-badge missed">Missed (Logged gently)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. CAREER DEVELOPMENT VIEW -->
+                <section id="career-view" class="view-section">
+                    <div class="module-header-actions">
+                        <div>
+                            <h2>Career Development Dimension</h2>
+                            <p>Connect career ambitions to verifiable learning activity, skill inventories, and milestones[cite: 4].</p>
+                        </div>
+                    </div>
+
+                    <div class="career-grid">
+                        <div class="panel">
+                            <h3>Target Role: Full Stack / Data Science Engineer</h3>
+                            <div class="progress-bar-container">
+                                <div class="progress-label"><span>Roadmap Completion</span><strong>65%</strong></div>
+                                <div class="progress-track"><div class="progress-fill" style="width: 65%;"></div></div>
+                            </div>
+                            <ul class="milestone-list">
+                                <li class="completed"><i class="fa-solid fa-circle-check"></i> HTML/CSS/JavaScript Foundations</li>
+                                <li class="completed"><i class="fa-solid fa-circle-check"></i> React Component Architecture & State</li>
+                                <li class="active-milestone"><i class="fa-solid fa-spinner fa-spin"></i> Data Structures & Algorithms in JS (In Progress)</li>
+                                <li><i class="fa-regular fa-circle"></i> Full-Stack Client-Side Integration Project</li>
+                            </ul>
+                        </div>
+                        <div class="panel">
+                            <h3>Active Skill Inventory</h3>
+                            <div class="tag-cloud">
+                                <span class="skill-tag">JavaScript (ES6+)</span>
+                                <span class="skill-tag">React.js</span>
+                                <span class="skill-tag">HTML5 & CSS3</span>
+                                <span class="skill-tag">Git & GitHub</span>
+                                <span class="skill-tag">Data Structures</span>
+                                <span class="skill-tag">Problem Solving</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. JOURNALING AND NOTES VIEW -->
+                <section id="journal-view" class="view-section">
+                    <div class="module-header-actions">
+                        <div>
+                            <h2>Journaling and Notes Dimension</h2>
+                            <p>A private, searchable space for ideas, reminders, and optional permission-controlled reflection[cite: 4].</p>
+                        </div>
+                        <button class="btn-primary" id="new-note-btn"><i class="fa-solid fa-plus"></i> New Note</button>
+                    </div>
+
+                    <div class="journal-grid">
+                        <div class="panel note-card">
+                            <span class="note-date">Today, 8:00 PM</span>
+                            <h4>App Idea: Offline Expense Visualizer</h4>
+                            <p>Building a lightweight client-side dashboard using local storage to parse daily spending without external cloud dependencies...</p>
+                            <div class="note-tags"><span class="tag">Idea</span><span class="tag">Code</span></div>
+                        </div>
+                        <div class="panel note-card">
+                            <span class="note-date">Yesterday</span>
+                            <h4>Placement Prep Roadmap Notes</h4>
+                            <p>Focus heavily on sliding window algorithms, two pointers, and React state lifecycle management before upcoming interviews.</p>
+                            <div class="note-tags"><span class="tag">Career</span><span class="tag">Study</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. ORBIT AI ASSISTANT VIEW -->
+                <section id="ai-view" class="view-section">
+                    <div class="module-header-actions">
+                        <div>
+                            <h2>ORBIT AI Assistant</h2>
+                            <p>Grounded in your authorized personal records to answer questions and provide contextual assistance[cite: 4].</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message ai">
+                                <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="msg-bubble">
+                                    Hello Rahul. I have reviewed your authorized records for today. Your balance is ₹9,500, you have completed 3 habits, and your stress levels have trended higher (8/10) over the last 3 weeks alongside declining learning activity. How can I assist you right now?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Ask ORBIT AI (e.g., 'Analyze my day', 'Can I afford a ₹2,500 smartwatch?')">
+                            <button id="send-chat-btn" class="btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Quick Modal for Logging -->
+    <div id="quick-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Quick Log Entry</h3>
+            <p>Tell ORBIT what you did or spent using natural language.</p>
+            <input type="text" id="natural-log-input" placeholder="e.g., I spent 120 rupees on lunch">
+            <button class="btn-primary" id="process-log-btn" style="margin-top: 15px; width: 100%;">Process and Record</button>
+            <div id="log-feedback" class="hidden" style="margin-top: 10px; color: var(--green);"></div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+        // Navigation Switcher Logic
+        const navItems = document.querySelectorAll('.nav-item');
+        const viewSections = document.querySelectorAll('.view-section');
+        const pageTitle = document.getElementById('page-title');
+        const pageSubtitle = document.getElementById('page-subtitle');
+
+        const titles = {
+            'dashboard-view': ['Dashboard Overview', 'Where do I currently stand? Your interconnected daily overview.'],
+            'finance-view': ['Finance Management', 'Track allowances, expenses, and evaluate deterministic budgets.'],
+            'wellbeing-view': ['Mental Wellbeing', 'Emotional reflections, check-ins, and personal wellbeing trends.'],
+            'habits-view': ['Habit Tracking', 'Build sustainable routines without unrealistic pressure.'],
+            'career-view': ['Career Development', 'Track skills, roadmaps, and verifiable learning milestones.'],
+            'journal-view': ['Journaling & Notes', 'Private searchable ideas and permission-controlled reflections.'],
+            'ai-view': ['ORBIT AI Assistant', 'Contextual assistance grounded in your authorized personal records.']
+        };
+
+        function switchView(targetId) {
+            navItems.forEach(item => {
+                if (item.getAttribute('data-target') === targetId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            viewSections.forEach(section => {
+                if (section.id === targetId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+
+            if (titles[targetId]) {
+                pageTitle.textContent = titles[targetId][0];
+                pageSubtitle.textContent = titles[targetId][1];
+            }
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = item.getAttribute('data-target');
+                switchView(target);
+            });
+        });
+
+        // Wellbeing Sliders Realtime Update
+        const moodRange = document.getElementById('mood-range');
+        const energyRange = document.getElementById('energy-range');
+        const stressRange = document.getElementById('stress-range');
+
+        if(moodRange) {
+            moodRange.addEventListener('input', (e) => document.getElementById('mood-val').textContent = e.target.value);
+            energyRange.addEventListener('input', (e) => document.getElementById('energy-val').textContent = e.target.value);
+            stressRange.addEventListener('input', (e) => document.getElementById('stress-val').textContent = e.target.value);
+        }
+
+        // Affordability Simulation Engine
+        const runSimBtn = document.getElementById('run-sim-btn');
+        if(runSimBtn) {
+            runSimBtn.addEventListener('click', () => {
+                const itemName = document.getElementById('sim-item-name').value || "Smartwatch";
+                const itemPrice = parseFloat(document.getElementById('sim-item-price').value) || 2500;
+                const remainingBalance = 5500;
+                const obligationBuffer = 1500;
+
+                const availableAfterPurchase = remainingBalance - itemPrice;
+                const simResult = document.getElementById('sim-result');
+                simResult.classList.remove('hidden');
+
+                if (availableAfterPurchase >= obligationBuffer) {
+                    simResult.innerHTML = `<strong class="green">Affordable with trade-offs:</strong> Purchasing "${itemName}" for ₹${itemPrice} leaves ₹${availableAfterPurchase} in your balance, covering your upcoming ₹1,500 obligations. However, this will reduce your discretionary savings buffer for the month.`;
+                } else {
+                    simResult.innerHTML = `<strong class="red">Not recommended:</strong> Purchasing "${itemName}" for ₹${itemPrice} leaves only ₹${availableAfterPurchase}, which breaches your ₹1,500 recorded upcoming obligations.`;
+                }
+            });
+        }
+
+        // Quick Log Modal Handler
+        const modal = document.getElementById('quick-modal');
+        const openModalBtn = document.getElementById('quick-action-btn');
+        const closeModal = document.querySelector('.close-modal');
+        const processLogBtn = document.getElementById('process-log-btn');
+
+        if(openModalBtn) {
+            openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+            closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+            window.addEventListener('click', (e) => { if(e.target === modal) modal.classList.add('hidden'); });
+        }
+
+        if(processLogBtn) {
+            processLogBtn.addEventListener('click', () => {
+                const inputVal = document.getElementById('natural-log-input').value;
+                const feedback = document.getElementById('log-feedback');
+                if(inputVal.trim() !== "") {
+                    feedback.classList.remove('hidden');
+                    feedback.textContent = `✓ Successfully extracted & recorded: "${inputVal}"`;
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        feedback.classList.add('hidden');
+                        document.getElementById('natural-log-input').value = "";
+                    }, 1500);
+                }
+            });
+        }
+
+        // Interactive AI Chat Simulator
+        const sendChatBtn = document.getElementById('send-chat-btn');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        function appendMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', sender);
+            msgDiv.innerHTML = `
+                <div class="msg-avatar"><i class="fa-solid ${sender === 'ai' ? 'fa-robot' : 'fa-user'}"></i></div>
+                <div class="msg-bubble">${text}</div>
+            `;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        if(sendChatBtn) {
+            sendChatBtn.addEventListener('click', handleUserChat);
+            chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleUserChat(); });
+        }
+
+        function handleUserChat() {
+            const text = chatInput.value.trim();
+            if(!text) return;
+            
+            appendMessage('user', text);
+            chatInput.value = '';
+
+            setTimeout(() => {
+                let reply = "I have analyzed your request against your authorized records. Everything looks consistent with your current weekly targets.";
+                const lower = text.toLowerCase();
+                if(lower.includes('afford') || lower.includes('watch') || lower.includes('price')) {
+                    reply = "Based on your current recorded balance of ₹9,500 and ₹1,500 in pending obligations, purchasing a ₹2,500 item is technically possible, but it will decrease your savings margin. Would you like me to adjust your budget projection?";
+                } else if(lower.includes('analyze') || lower.includes('day')) {
+                    reply = "Daily Analysis: You recorded 3 of 5 habits, spent ₹80 on breakfast, and completed your morning review. Your stress levels remain high (8/10), so consider balancing your career milestones with a lighter evening schedule.";
+                }
+                appendMessage('ai', reply);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
